@@ -30,9 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     //Constantes del juego
@@ -40,10 +43,12 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
         const val SCORE_KEY = "score"
         const val LEVEL_KEY = "level"
+        const val USERNAME_KEY = "username"
     }
 
     //Crear objeto e iniciarlo
     private var game: Game
+
 
     init {
         game = Game()
@@ -51,11 +56,33 @@ class MainActivity : ComponentActivity() {
 
     //Metodo para aumentar los puntos y nivel y darselos al juego
     private val increaseScoreLevel: (Int) -> Game = { increase ->
-        val increasedScore = game.score + increase
-        val userLevel = game.score / 10
+        var randomIncrease = 1
+
+        if (game.level > 2) {
+            randomIncrease =  Random.nextInt(increase, game.level + 1)
+        }
+
+        val increasedScore = game.score + randomIncrease
+        val userLevel = increasedScore / 10
 
         //Se copian los datos ya creados y devuelve el objeto
         game = game.copy(score = increasedScore, level = userLevel)
+        game
+    }
+
+    //Metodo para disminuir los puntos y nivel y darselos al juego
+    private val decreaseScoreLevel: (Int) -> Game = { decrease ->
+        var decreasedScore = 0
+
+        if (decrease <= game.score) {
+            decreasedScore = game.score - decrease
+        }
+
+        val userLevel = decreasedScore / 10
+
+
+        //Se copian los datos ya creados y devuelve el objeto
+        game = game.copy(score = decreasedScore, level = userLevel)
         game
     }
 
@@ -64,6 +91,7 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, EndGameActivity::class.java)
         intent.putExtra(SCORE_KEY, game.score)
         intent.putExtra(LEVEL_KEY, game.level)
+        intent.putExtra(USERNAME_KEY, game.name)
 
         //Inicia la actividad con los parametros ya actualizados
         startActivity(intent)
@@ -84,6 +112,11 @@ class MainActivity : ComponentActivity() {
         //Ocupar toda la pantalla
         enableEdgeToEdge()
 
+        //Recogo el Nombre de Usuario
+        val userName = intent.getStringExtra(LauncherActivity.USER_KEY) ?: "Player"
+
+        game.name = userName
+
         //Aqui se define la Interfaz
         setContent {
             MaterialTheme {
@@ -92,7 +125,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         CenterAlignedTopAppBar(
-                            title = { Text("App Juego 1")})
+                            title = { Text(stringResource(R.string.app_title)) })
                     }
                 ) { innerPadding ->
                     /*
@@ -103,6 +136,7 @@ class MainActivity : ComponentActivity() {
                         game,
                         Modifier.padding(innerPadding),
                         increaseScoreLevel,
+                        decreaseScoreLevel,
                         goToEndGameActivity
                     )
                 }
@@ -166,6 +200,7 @@ fun GameStateDisplay(
     game: Game,
     modifier: Modifier = Modifier,
     onIncButton: (Int) -> Game,
+    onDecButton: (Int) -> Game,
     onEndGameButton: () -> Unit
 ) {
     var gameNow by remember { mutableStateOf(game) }
@@ -191,18 +226,35 @@ fun GameStateDisplay(
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            var color: Color?
+            if (gameNow.level >= 0 && gameNow.level < 3) {
+                color = colorResource(R.color.level_0_to_2)
+            } else if (gameNow.level >= 3 && gameNow.level < 7) {
+                color = colorResource(R.color.level_3_to_6)
+            } else {
+                color = colorResource(R.color.level_7_to_9)
+            }
             //Columna con las variables
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.Cyan)
+                    .background(color)
                     .padding(8.dp),
             ) {
-                ShowParams("Score: ", gameNow.score)
+                ShowParams(stringResource(R.string.param_score), gameNow.score)
                 //Espacio entre parametros
                 Spacer(Modifier.height(20.dp))
 
-                ShowParams("Level: ", gameNow.level)
+                ShowParams(stringResource(R.string.param_level), gameNow.level)
+
+                if (gameNow.level >= 5 && gameNow.level < 10) {
+                    Spacer(Modifier.height(10.dp))
+
+                    Text("You're doing well!")
+
+                } else if (gameNow.level == 10) {
+                    onEndGameButton()
+                }
             }
 
             Spacer(Modifier.height(10.dp))
@@ -216,8 +268,18 @@ fun GameStateDisplay(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 //Boton con la funcion y el numero de puntos que aumenta
-                StandardButton("Increase Score") {
+                StandardButton(stringResource(R.string.button_increase)) {
                     gameNow = onIncButton(1)
+                }
+
+                Spacer(Modifier.height(4.dp))
+
+                StandardButton(stringResource(R.string.button_decrease)) {
+                    gameNow = if (gameNow.level == 0) {
+                        onDecButton(1)
+                    } else {
+                        onDecButton(gameNow.level * 2)
+                    }
                 }
             }
         }
@@ -231,7 +293,7 @@ fun GameStateDisplay(
             verticalAlignment = Alignment.Bottom
         ) {
             //Boton con la Funcion de Terminar el Juego
-            StandardButton("End Game") {
+            StandardButton(stringResource(R.string.button_end_game)) {
                 onEndGameButton()
             }
         }
@@ -241,7 +303,7 @@ fun GameStateDisplay(
 //Funciones Auxiliares
 //-- Saludar al Usuario
 @Composable
-fun Welcome(name: String, modifier: Modifier = Modifier) {
+fun Welcome(name: String?, modifier: Modifier = Modifier) {
     Text("Hello $name", modifier = modifier, fontWeight = FontWeight.Bold)
 }
 
@@ -266,7 +328,8 @@ fun StandardButton(textData: String, modifier: Modifier = Modifier, onClick: () 
 fun PreviewGame() {
     GameStateDisplay(
         game = Game(),
-        onIncButton = { it -> Game(score = it) }, // función de prueba
-        onEndGameButton = {} // no hace nada
+        onIncButton = { it -> Game(score = it) },
+        onDecButton = { it -> Game(score = it) },
+        onEndGameButton = {}
     )
 }

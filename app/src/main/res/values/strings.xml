@@ -8,6 +8,7 @@
     <string name="button_end_game">End Game</string>
     <string name="param_score">Score: </string>
     <string name="param_level">Level: </string>
+    <string name="good_way">You`re doing well! </string>
 
     <!-- Parametros de LauncherActivity -->
     <string name="game_welcome">Bienvenido al Juego Contador de Puntos</string>
@@ -17,6 +18,8 @@
     <!-- Parametros de EndGameActivity -->
     <string name="level_10_reached">Congratulations, You`ve reached level 10!</string>
     <string name="game_over">Game Over, press "Play Again" button to Play Again</string>
+    <string name="final_score">Final Score: %d</string>
+    <string name="final_level">Level: %d</string>
     <string name="trophy_description">Trofeo por haber pasado el Juego</string>
     <string name="button_send_data">Send Data</string>
     <string name="button_play_again">Play Again</string>

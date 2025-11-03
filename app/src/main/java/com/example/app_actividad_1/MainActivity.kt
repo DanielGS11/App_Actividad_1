@@ -250,7 +250,7 @@ fun GameStateDisplay(
                 if (gameNow.level >= 5 && gameNow.level < 10) {
                     Spacer(Modifier.height(10.dp))
 
-                    Text("You're doing well!")
+                    Text(stringResource(R.string.good_way))
 
                 } else if (gameNow.level == 10) {
                     onEndGameButton()

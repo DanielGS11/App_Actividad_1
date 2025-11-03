@@ -79,8 +79,8 @@ class EndGameActivity : ComponentActivity() {
                         //Espacio entre el titulo y el texto
                         Spacer(Modifier.height(30.dp))
 
-                        Text("Final Score: $score", style = MaterialTheme.typography.headlineMedium)
-                        Text("Level: $level", style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.final_score, score), style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.final_level, level), style = MaterialTheme.typography.headlineMedium)
 
                         Spacer(Modifier.height(30.dp))
 
@@ -105,7 +105,7 @@ class EndGameActivity : ComponentActivity() {
                                     type = "text/plain"
 
                                     putExtra(Intent.EXTRA_SUBJECT, "Puntuacion del jugador $userName")
-                                    putExtra(Intent.EXTRA_TEXT, "El jugador $userName, ha obtenido $score puntos y alcanzó el nivel $level")
+                                    putExtra(Intent.EXTRA_TEXT, "El jugador $userName ha obtenido $score puntos y alcanzó el nivel $level")
                                 }
 
                                 startActivity(Intent.createChooser(intent, "Enviar Datos"))

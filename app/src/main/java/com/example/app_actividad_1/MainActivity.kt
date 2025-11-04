@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.app_actividad_1.ui.theme.App_Actividad_1Theme
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -119,7 +120,7 @@ class MainActivity : ComponentActivity() {
 
         //Aqui se define la Interfaz
         setContent {
-            MaterialTheme {
+            App_Actividad_1Theme {
                 Scaffold(
                     //Barra Superior
                     modifier = Modifier.fillMaxSize(),

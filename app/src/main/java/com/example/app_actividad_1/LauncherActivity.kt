@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app_actividad_1.ui.theme.App_Actividad_1Theme
 
 class LauncherActivity : ComponentActivity() {
     companion object {
@@ -56,7 +57,7 @@ class LauncherActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            MaterialTheme {
+            App_Actividad_1Theme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -75,6 +76,7 @@ class LauncherActivity : ComponentActivity() {
                         /*
                         Se invoca la variable aqui para que tanto la columna donde
                         se introduce el nombre como el boton que lo envia pueda usarlo
+                        y se guarde el dato a enviar
                          */
                         var name by remember { mutableStateOf("") }
 
@@ -104,4 +106,3 @@ class LauncherActivity : ComponentActivity() {
         }
     }
 }
-
